@@ -37,11 +37,11 @@ void advance(char a, char b) // -> changed to turn right
   digitalWrite(M2, LOW);
 }
 
-//MOVE BACKWARDS // -> changed to turn left
+//MOVE BACKWARDS // -> changed to turn left, low d4, ~2.2 instead of 5
 void back_off (char a, char b)
 {
   analogWrite (E1, a);
-  digitalWrite(M1, LOW);
+  digitalWrite(M1, LOW); // = ~2.2 V @ pin 4, M1
   analogWrite (E2, b);
   //digitalWrite(M2, LOW);
   digitalWrite(M2, HIGH);
@@ -58,7 +58,7 @@ void turn_L (char a, char b)
   digitalWrite(M2, HIGH);
 }
 
-//TURN RIGHT // -> changed to go backward
+//TURN RIGHT // -> changed to go backward, low d4, ~2.2 instead of 5
 void turn_R (char a, char b)
 {
   analogWrite (E1, a);
@@ -88,25 +88,25 @@ void loop(void) {
         case 'w'://Move Forward
           Serial.println("going forward");
           advance (255, 255);  //move forward at max speed
-          delay (100);
+          delay (1000);
           stop();
           break;
         case 's'://Move Backward
           Serial.println("going backward");
           back_off (255, 255);  //move backwards at max speed
-          delay (100);
+          delay (1000);
           stop();
           break;
         case 'a'://Turn Left
           Serial.println("turning left");
-          turn_L (255, 255);
-          delay (100);
+          turn_L (75, 75);
+          delay (1000);
           stop();
           break;
         case 'd'://Turn Right
           Serial.println("turning right");
-          turn_R (255, 255);
-          delay (100);
+          turn_R (125, 125);
+          delay (1000);
           stop();
           break;
         case 'z':
