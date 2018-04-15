@@ -28,38 +28,42 @@ void stop(void)
 }
 
 //ADVANCE
-void advance(char a, char b)
+void advance(char a, char b) // -> changed to turn right
 {
   analogWrite (E1, a);
   digitalWrite(M1, HIGH);
   analogWrite (E2, b);
-  digitalWrite(M2, HIGH);
+  //digitalWrite(M2, HIGH);
+  digitalWrite(M2, LOW);
 }
 
-//MOVE BACKWARDS
+//MOVE BACKWARDS // -> changed to turn left
 void back_off (char a, char b)
 {
   analogWrite (E1, a);
   digitalWrite(M1, LOW);
   analogWrite (E2, b);
-  digitalWrite(M2, LOW);
+  //digitalWrite(M2, LOW);
+  digitalWrite(M2, HIGH);
 }
 
 
-//TURN LEFT
+//TURN LEFT // -> changed to current go forward
 void turn_L (char a, char b)
 {
   analogWrite (E1, a);
-  digitalWrite(M1, LOW);
+  //digitalWrite(M1, LOW);
+  digitalWrite(M1, HIGH);
   analogWrite (E2, b);
   digitalWrite(M2, HIGH);
 }
 
-//TURN RIGHT
+//TURN RIGHT // -> changed to go backward
 void turn_R (char a, char b)
 {
   analogWrite (E1, a);
-  digitalWrite(M1, HIGH);
+  //digitalWrite(M1, HIGH);
+  digitalWrite(M1, LOW);
   analogWrite (E2, b);
   digitalWrite(M2, LOW);
 }
@@ -84,25 +88,25 @@ void loop(void) {
         case 'w'://Move Forward
           Serial.println("going forward");
           advance (255, 255);  //move forward at max speed
-          delay (1000);
+          delay (100);
           stop();
           break;
         case 's'://Move Backward
           Serial.println("going backward");
           back_off (255, 255);  //move backwards at max speed
-          delay (1000);
+          delay (100);
           stop();
           break;
         case 'a'://Turn Left
           Serial.println("turning left");
           turn_L (255, 255);
-          delay (1000);
+          delay (100);
           stop();
           break;
         case 'd'://Turn Right
           Serial.println("turning right");
           turn_R (255, 255);
-          delay (1000);
+          delay (100);
           stop();
           break;
         case 'z':
