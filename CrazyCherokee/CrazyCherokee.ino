@@ -149,34 +149,67 @@ void motorStop(int duration)
 
 void motorForward(int speedM1, int speedM2, int duration)
 {
-    digitalWrite(PM1_EN, HIGH);
-    digitalWrite(PM2_EN, LOW);
-    analogWrite(PM1_PWM, speedM1);
-    analogWrite(PM2_PWM, speedM2);
+    // Attempt to shut off motors if no input
+    if (speedM1 == 0 && speedM2 == 0)
+    {
+        digitalWrite(PM1_EN, LOW);
+        digitalWrite(PM2_EN, LOW);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
+    else
+    {
+        digitalWrite(PM1_EN, HIGH);
+        digitalWrite(PM2_EN, LOW);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
     delay(duration);
 }
 
 void motorReverse(int speedM1, int speedM2, int duration)
 {
-    digitalWrite(PM1_EN, LOW);
-    digitalWrite(PM2_EN, HIGH);
-    analogWrite(PM1_PWM, speedM1);
-    analogWrite(PM2_PWM, speedM2);
+    if (speedM1 == 0 && speedM2 == 0)
+    {
+        digitalWrite(PM1_EN, LOW);
+        digitalWrite(PM2_EN, LOW);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
+    else
+    {
+        digitalWrite(PM1_EN, LOW);
+        digitalWrite(PM2_EN, HIGH);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
     delay(duration);
 }
 
 void motorTurnLeft(int speedM1, int speedM2, int duration)
 {
-    digitalWrite(PM1_EN, HIGH);
-    digitalWrite(PM2_EN, HIGH);
-    analogWrite(PM1_PWM, speedM1);
-    analogWrite(PM2_PWM, speedM2);
+    if (speedM1 == 0 && speedM2 == 0)
+    {
+        digitalWrite(PM1_EN, LOW);
+        digitalWrite(PM2_EN, LOW);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
+    else
+    {
+        digitalWrite(PM1_EN, HIGH);
+        digitalWrite(PM2_EN, HIGH);
+        analogWrite(PM1_PWM, speedM1);
+        analogWrite(PM2_PWM, speedM2);
+    }
     delay(duration);
 }
 
 
 void motorTurnRight(int speedM1, int speedM2, int duration)
 {
+    // This one doesn't need the hack since both motors are set LOW to
+    // achieve this action
     digitalWrite(PM1_EN, LOW);
     digitalWrite(PM2_EN, LOW);
     analogWrite(PM1_PWM, speedM1);
