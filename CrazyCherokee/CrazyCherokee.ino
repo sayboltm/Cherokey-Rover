@@ -44,6 +44,73 @@ void loop()
         if (c == '\n') // The packet coming over the line is finished,
         {
             // pass, insert cases to handle over serial line
+            Serial.println("Command: ");
+            Serial.println(charQueue);
+
+            Serial.println("Char: ");
+            // Declare char array, currently 5 elements is enough
+            // to handle actions from CF2/controller
+            char charArr[5];
+            charQueue.toCharArray(charArr, 5);
+            Serial.println(charQueue);
+
+            // Acquire speeds from serial packet to set and tell user
+            Serial.print("SpeedM1: ");
+            int speedM1 = charArr[2];
+            // speedM1 = (speedM1 - 48) * 28; // Copied verbatim from evoggy, not sure what this is for exactly
+            // See picture of scope screen
+            // Need to map these 0-9-Null values to 0-255, unless thats what this does!
+            speedM1 = speedM1 * 28; // Scale so 9 is ~255
+            Serial.print("SpeedM2: ");
+            int speedM2 = charArr[3];
+            // speedM2 = (speedM2 - 48) * 28; //dunno why this, but 28 showed up in my version too!
+            speedM2 = speedM2 * 28; // Scale so 9 is ~255
+
+            // Print the new speed values for user on Serial monitor
+            Serial.print("SpeedM1 adjusted: ");
+            Serial.println(speedM1);
+            Serial.print("SpeedM2 adjusted: ");
+            Serial.println(speedM2);
+           
+            // Write values to PWM
+            // analogWrite(PM1_PWM, speedM1);
+            // analogWrite(PM2_PWM, speedM2);
+            // Need to pass into cases for Cherokey
+
+            // Unlike example, need separate if tree (notice no elifs) so each case
+            // is tested every time as the loop progresses, vs one action per cycle of loop
+            // which is fine for simple keyboard input/test
+
+            // Process direction.
+            // charArr[0] and [1] hold direction for two motors. For me
+            // watching the scope, B was forward and F was backward.
+            // This should be changed in the CF firmware to make it easier to read, unless I'm missing something
+            if (charArr[0] == 'S' && charArr[1] == 'S') // Never actually seen this case but copying evoggy
+            {
+                motorStop(0);
+                Serial.print("Stop");
+            }
+
+            if (charArr[0] == 'F' && charArr[1] == 'F') // Never actually seen this case but copying evoggy
+            {
+                motorForward(speedM1, speedM2, 0);
+                Serial.print("Forward");
+            }
+            if (charArr[0] == 'B' && charArr[1] == 'B') // Never actually seen this case but copying evoggy
+            {
+                motorReverse(speedM1, speedM2, 0);
+                Serial.print("Reverse");
+            }
+            if (charArr[0] == 'S' && charArr[1] == 'S') // Never actually seen this case but copying evoggy
+            {
+                motorTurnLeft(speedM1, speedM2, 0);
+                Serial.print("TurnLeft");
+            }
+            if (charArr[0] == 'S' && charArr[1] == 'S') // Never actually seen this case but copying evoggy
+            {
+                motorTurnRight(speedM1, speedM2, 0);
+                Serial.print("TurnRight");
+            }
 
             Serial.println(";"); // Notify user of end
             charQueue = ""; // Reset the char queue
@@ -53,31 +120,60 @@ void loop()
             // IF not the end of a packet,
             // Add the chars into a char queue
             charQueue += c;
+            Serial.println(c);
         }
     }
 }
 
 void motorSetSpeed(int power)
 {
+    // This function seems pointless/only used once
+    analogWrite(PM1_PWM, power);
+    analogWrite(PM2_PWM, power);
 }
 
 void motorStop(int duration)
 {
+    digitalWrite(PM1_PWM, 0);
+    digitalWrite(PM2_PWM, 0);
+    digitalWrite(PM1_EN, LOW);
+    digitalWrite(PM2_EN, LOW);
+    delay(duration);
 }
 
-void motorForward(int duration)
+void motorForward(int speedM1, int speedM2, int duration)
 {
+    digitalWrite(PM1_EN, HIGH);
+    digitalWrite(PM2_EN, LOW);
+    analogWrite(PM1_PWM, speedM1);
+    analogWrite(PM2_PWM, speedM2);
+    delay(duration);
 }
 
-void motorReverse(int duration)
+void motorReverse(int speedM1, int speedM2, int duration)
 {
+    digitalWrite(PM1_EN, LOW);
+    digitalWrite(PM2_EN, HIGH);
+    analogWrite(PM1_PWM, speedM1);
+    analogWrite(PM2_PWM, speedM2);
+    delay(duration);
 }
 
-void motorTurnLeft(int duration)
+void motorTurnLeft(int speedM1, int speedM2, int duration)
 {
+    digitalWrite(PM1_EN, HIGH);
+    digitalWrite(PM2_EN, HIGH);
+    analogWrite(PM1_PWM, speedM1);
+    analogWrite(PM2_PWM, speedM2);
+    delay(duration);
 }
 
 
-void motorTurnRight(int duration)
+void motorTurnRight(int speedM1, int speedM2, int duration)
 {
+    digitalWrite(PM1_EN, LOW);
+    digitalWrite(PM2_EN, LOW);
+    analogWrite(PM1_PWM, speedM1);
+    analogWrite(PM2_PWM, speedM2);
+    delay(duration);
 }
