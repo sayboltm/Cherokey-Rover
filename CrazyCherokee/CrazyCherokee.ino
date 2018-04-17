@@ -7,7 +7,11 @@ the scope yielded useful information about the communication protocol being used
 and how evoggy's code controls the hercules bot. Analyzing the Cherokey example,
 a translation layer can be made to control the Cherokey rover in a similar manner
 and still using the chars sent over serial from evoggy's crazyflie firmware 
-modification.
+modification. This is a hack of Evoggy's code to control the Cherokey Rover using
+a similar archetecture. It works well enough for proof of concept! Couldn't have done
+it without you, evoggy.
+
+Wire it up just like the Cherokey example 2, but the rx/tx lines can be ignored.
 */
 
 #define PM1_EN  4   // M1 direction, low, high
@@ -32,7 +36,7 @@ void setup()
     pinMode(PM2_PWM, OUTPUT);
 
     // PWM of 0 gives 0 speed to Cherokey motors
-    motorSetSpeed(0);
+    motorInit(0);
 }
 
 
@@ -90,23 +94,24 @@ void loop()
                 motorStop(0);
                 Serial.print("Stop");
             }
-
             if (charArr[0] == 'F' && charArr[1] == 'F') // Never actually seen this case but copying evoggy
             {
-                motorForward(speedM1, speedM2, 0);
+                // Something in the CF firmware makes FW on the controller (with default drone mapping
+                // in cfclient) send Bs, and backward send F.. so easily flipped them here.
+                motorReverse(speedM1, speedM2, 0);
                 Serial.print("Forward");
             }
             if (charArr[0] == 'B' && charArr[1] == 'B') // Never actually seen this case but copying evoggy
             {
-                motorReverse(speedM1, speedM2, 0);
+                motorForward(speedM1, speedM2, 0);
                 Serial.print("Reverse");
             }
-            if (charArr[0] == 'S' && charArr[1] == 'S') // Never actually seen this case but copying evoggy
+            if (charArr[0] == 'B' && charArr[1] == 'F') // Never actually seen this case but copying evoggy
             {
                 motorTurnLeft(speedM1, speedM2, 0);
                 Serial.print("TurnLeft");
             }
-            if (charArr[0] == 'S' && charArr[1] == 'S') // Never actually seen this case but copying evoggy
+            if (charArr[0] == 'F' && charArr[1] == 'B') // Never actually seen this case but copying evoggy
             {
                 motorTurnRight(speedM1, speedM2, 0);
                 Serial.print("TurnRight");
@@ -125,13 +130,14 @@ void loop()
     }
 }
 
-void motorSetSpeed(int power)
+void motorInit(int power)
 {
     // This function seems pointless/only used once
     analogWrite(PM1_PWM, power);
     analogWrite(PM2_PWM, power);
 }
 
+//void motor1update(
 void motorStop(int duration)
 {
     digitalWrite(PM1_PWM, 0);
